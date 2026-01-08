@@ -3,18 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BECE Maths Prep CBT</title>
+    <title>JSS 3 Mathematics CBT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .option-card:hover { transform: translateY(-2px); }
         .timer-warning { color: #ef4444; animation: pulse 1s infinite; }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -23,34 +19,21 @@
     <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-8 md:p-12 border border-slate-100">
             <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 rotate-3 shadow-xl shadow-indigo-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
+                <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 rotate-3 shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
                 </div>
                 <h1 class="text-3xl font-extrabold text-slate-800">Mathematics CBT</h1>
-                <p class="text-slate-500 font-medium mt-1">JSS 3 First Term Exam</p>
+                <p class="text-slate-500 font-medium">JSS 3 First Term Exam</p>
             </div>
-
             <div class="space-y-6">
                 <div>
                     <label class="block text-sm font-bold text-slate-600 mb-2">FULL NAME OF STUDENT</label>
                     <input type="text" id="student-name" placeholder="Enter your name..." class="w-full bg-slate-50 border-2 border-slate-100 focus:border-indigo-500 rounded-xl px-5 py-4 text-lg outline-none transition-all">
                 </div>
-                <div class="bg-indigo-50 rounded-xl p-5 text-indigo-800 text-sm border border-indigo-100">
-                    <div class="flex items-center gap-2 font-bold mb-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>
-                        Exam Duration: 20 Minutes
-                    </div>
-                    <ul class="list-disc list-inside mt-2 text-indigo-700/80">
-                        <li>20 fixed questions for this session.</li>
-                        <li>Shuffled question order for every student.</li>
-                        <li>Auto-submission with detailed reporting.</li>
-                    </ul>
+                <div class="bg-indigo-50 rounded-xl p-5 text-indigo-800 text-sm border border-indigo-100 font-medium">
+                    Exam Duration: 20 Minutes • 20 Questions
                 </div>
-                <button onclick="startTest()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg text-lg flex items-center justify-center gap-2">
-                    Start Test 
-                </button>
+                <button onclick="startTest()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg text-lg">Start Test</button>
             </div>
         </div>
     </div>
@@ -59,19 +42,15 @@
     <div id="test-screen" class="hidden min-h-screen flex flex-col max-w-5xl mx-auto md:py-8 px-4">
         <header class="bg-white rounded-t-3xl border-b border-slate-100 p-6 flex items-center justify-between shadow-sm sticky top-0 z-10">
             <div class="flex items-center gap-4">
-                <div id="q-number-box" class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-100">1</div>
+                <div id="q-number-box" class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-bold text-xl">1</div>
                 <div>
                     <h2 id="q-header" class="text-lg font-bold text-slate-800">Question 1 of 20</h2>
-                    <div id="timer-display" class="flex items-center gap-1.5 font-bold text-indigo-600 tabular-nums">
-                        <span id="time-left">20:00</span>
-                    </div>
+                    <div id="timer-display" class="flex items-center gap-1.5 font-bold text-indigo-600"><span id="time-left">20:00</span></div>
                 </div>
             </div>
             <div class="text-right hidden sm:block">
                 <p id="display-name" class="text-sm font-bold text-slate-700"></p>
-                <div id="status-indicator" class="flex items-center gap-1 text-slate-400 text-xs font-bold uppercase justify-end">
-                    Offline Mode
-                </div>
+                <div id="status-indicator" class="flex items-center gap-1 text-slate-400 text-xs font-black uppercase">Offline</div>
             </div>
         </header>
 
@@ -80,18 +59,17 @@
         </div>
 
         <main class="bg-white p-8 md:p-12 flex-grow min-h-[400px]">
-            <h3 id="question-text" class="text-2xl font-bold text-slate-800 leading-snug mb-10">Loading question...</h3>
+            <h3 id="question-text" class="text-2xl font-bold text-slate-800 leading-snug mb-10"></h3>
             <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </main>
 
         <footer class="bg-white border-t border-slate-100 p-6 rounded-b-3xl flex items-center justify-between shadow-xl">
-            <button onclick="prevQuestion()" id="prev-btn" class="px-6 py-3 font-bold text-slate-400 hover:text-slate-800 flex items-center gap-2">Previous</button>
+            <button onclick="prevQuestion()" id="prev-btn" class="px-6 py-3 font-bold text-slate-400 hover:text-slate-800">Previous</button>
             <div id="nav-btns">
-                <button onclick="nextQuestion()" id="next-btn" class="bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg">Next Question</button>
-                <button onclick="confirmSubmit()" id="submit-btn" class="hidden bg-green-600 text-white px-10 py-4 rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg">Submit Exam</button>
+                <button onclick="nextQuestion()" id="next-btn" class="bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold">Next Question</button>
+                <button onclick="confirmSubmit()" id="submit-btn" class="hidden bg-green-600 text-white px-10 py-4 rounded-xl font-bold">Submit Exam</button>
             </div>
         </footer>
-
         <div id="progress-grid" class="mt-6 flex flex-wrap justify-center gap-2 pb-10"></div>
     </div>
 
@@ -102,28 +80,21 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
             <h1 class="text-3xl font-black text-slate-800 mb-2">Test Completed</h1>
-            <p class="text-slate-500 mb-8" id="submission-status">Calculating results...</p>
-            
+            <p class="text-slate-500 mb-8 font-medium" id="submission-status">Calculating...</p>
             <div class="bg-slate-50 rounded-3xl p-8 mb-8 border border-slate-100">
-                <p class="text-xs uppercase tracking-[0.2em] font-black text-slate-400 mb-2">Final Score</p>
                 <div id="final-score-display" class="text-7xl font-black text-indigo-600">0/20</div>
                 <div id="final-percent" class="text-2xl font-bold text-slate-700 mt-2">0%</div>
             </div>
-
-            <div class="space-y-3">
-                <button onclick="downloadResult()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-xl shadow-lg">Download Result Slip</button>
-                <button onclick="location.reload()" class="w-full text-slate-400 font-bold py-2">Exit</button>
-            </div>
+            <button onclick="downloadResult()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-xl shadow-lg mb-3">Download Result Slip</button>
+            <button onclick="location.reload()" class="w-full text-slate-400 font-bold py-2">Exit</button>
         </div>
     </div>
 
-    <!-- Firebase Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -139,24 +110,19 @@
 
         const init = async () => {
             try {
-                // RULE 3: Call sign in FIRST and await it
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
                     await signInAnonymously(auth);
                 }
-            } catch (err) {
-                console.warn("Auth failed, student is in offline-only mode.");
-            }
-
-            // Track state for UI feedback
-            onAuthStateChanged(auth, (user) => {
-                const indicator = document.getElementById('status-indicator');
-                if (user && indicator) {
-                    indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Cloud Active';
-                    indicator.className = 'flex items-center gap-1 text-green-500 text-xs font-bold uppercase justify-end';
-                }
-            });
+                onAuthStateChanged(auth, (user) => {
+                    const indicator = document.getElementById('status-indicator');
+                    if (user && indicator) {
+                        indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Cloud Active';
+                        indicator.className = 'flex items-center gap-1 text-green-500 text-xs font-black uppercase';
+                    }
+                });
+            } catch (err) { console.warn("Cloud connection unavailable."); }
         };
         init();
     </script>
@@ -166,23 +132,23 @@
             { q: "Simplify the expression 1 1/5 ÷ 2 1/10.", options: ["3/7", "4/7", "7/4", "1/2"], correct: "4/7" },
             { q: "Simplify the expression 3/4 - 1/6.", options: ["7/12", "5/12", "1/2", "2/2"], correct: "7/12" },
             { q: "Convert 0.875 to a fraction in its simplest form.", options: ["7/8", "3/4", "5/6", "9/10"], correct: "7/8" },
-            { q: "A man spends 1/4 of his monthly income on children's school fees and 3/5 on home affairs. What fraction of his income is left?", options: ["17/20", "7/20", "3/20", "1/5"], correct: "3/20" },
-            { q: "Solve the equation 4/3x = 7 - 3/x.", options: ["x = 21/13", "x = 13/21", "x = 7/4", "x = 1"], correct: "x = 13/21" },
-            { q: "Solve for d in the equation (d - 7)/2 = 5.", options: ["10", "12", "17", "2"], correct: "17" },
+            { q: "A man spends 1/4 income on fees and 3/5 on home. Fraction left?", options: ["17/20", "7/20", "3/20", "1/5"], correct: "3/20" },
+            { q: "Solve 4/3x = 7 - 3/x.", options: ["x = 21/13", "x = 13/21", "x = 7/4", "x = 1"], correct: "x = 13/21" },
+            { q: "Solve for d: (d - 7)/2 = 5.", options: ["10", "12", "17", "2"], correct: "17" },
             { q: "Solve 2x/3 + 5 = 2/3.", options: ["-6.5", "-6.0", "-4.5", "7.5"], correct: "-6.5" },
-            { q: "A school compound area is 900 1/2 m². If buildings occupy 300 1/4 m², library 200 1/2 m², and park 120 1/8 m², what is the area of roads?", options: ["900 1/2 m²", "620 7/8 m²", "279 5/8 m²", "300 1/4 m²"], correct: "279 5/8 m²" },
-            { q: "A man earned an interest of N240.00 in 4 years at 20% per annum simple interest. Calculate the principal.", options: ["N300.00", "N450.00", "N480.00", "N1,200.00"], correct: "N300.00" },
-            { q: "If 4 men can do a piece of work in 8 days, how many days would it take 16 men working at the same rate?", options: ["32 days", "12 days", "4 days", "2 days"], correct: "2 days" },
-            { q: "Ada, Musa, and Femi share N27,000 in ratio 2:3:5. How much will Femi receive?", options: ["N5,400", "N8,100", "N13,500", "N15,000"], correct: "N13,500" },
-            { q: "If 30% of a number is 900, what is the number?", options: ["270", "1,200", "2,700", "3,000"], correct: "3,000" },
-            { q: "The sum of ages of Kofi and Amma is 40. If Kofi is 3 times as old as Amma, how old is Kofi?", options: ["10 years", "20 years", "30 years", "40 years"], correct: "30 years" },
-            { q: "If the mean of 3, 2, x, 11, 13, 14 is 8, find the value of x.", options: ["5", "6", "8", "10"], correct: "5" },
+            { q: "School compound area 900.5. Buildings 300.25, library 200.5, park 120.125. Roads?", options: ["900.5", "620.875", "279.625", "300.25"], correct: "279.625" },
+            { q: "Interest N240 in 4 years at 20% simple interest. Principal?", options: ["N300.00", "N450.00", "N480.00", "N1,200.00"], correct: "N300.00" },
+            { q: "4 men in 8 days. How many days for 16 men?", options: ["32 days", "12 days", "4 days", "2 days"], correct: "2 days" },
+            { q: "Share N27,000 in ratio 2:3:5. How much for Femi (last part)?", options: ["N5,400", "N8,100", "N13,500", "N15,000"], correct: "N13,500" },
+            { q: "30% of a number is 900. What is the number?", options: ["270", "1,200", "2,700", "3,000"], correct: "3,000" },
+            { q: "Sum of ages is 40. Kofi is 3x as old as Amma. Kofi's age?", options: ["10 years", "20 years", "30 years", "40 years"], correct: "30 years" },
+            { q: "Mean of 3, 2, x, 11, 13, 14 is 8. Find x.", options: ["5", "6", "8", "10"], correct: "5" },
             { q: "Express 367,900 in standard form.", options: ["3.679 x 10^3", "3.679 x 10^4", "3.679 x 10^5", "36.79 x 10^4"], correct: "3.679 x 10^5" },
             { q: "Express 0.00254 in standard form.", options: ["2.54 x 10^-2", "2.54 x 10^-3", "2.54 x 10^3", "25.4 x 10^-4"], correct: "2.54 x 10^-3" },
-            { q: "Expand and simplify 2(3a + 1) - 3(4a - 3).", options: ["11 - 6a", "6a - 11", "18a + 11", "7 - 6a"], correct: "11 - 6a" },
+            { q: "Expand 2(3a + 1) - 3(4a - 3).", options: ["11 - 6a", "6a - 11", "18a + 11", "7 - 6a"], correct: "11 - 6a" },
             { q: "Factorize x² - 9.", options: ["(x-3)²", "(x+3)(x-3)", "(x-9)(x+1)", "(x+3)²"], correct: "(x+3)(x-3)" },
             { q: "Expand (x + 3)(x - 2).", options: ["x² + x - 6", "x² - x - 6", "x² + 5x - 6", "x² - 6"], correct: "x² + x - 6" },
-            { q: "Find the value of 16 x 2 - 3 + 14 ÷ 7.", options: ["15", "20", "26", "31"], correct: "31" }
+            { q: "Value of 16 x 2 - 3 + 14 ÷ 7.", options: ["15", "20", "26", "31"], correct: "31" }
         ];
 
         let selectedQuestions = [];
@@ -209,16 +175,12 @@
             document.getElementById('display-name').innerText = userName;
             initProgressGrid();
             renderQuestion();
-            startTimer();
-        }
-
-        function startTimer() {
             timerInterval = setInterval(() => {
                 timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                document.getElementById('time-left').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-                if (timeLeft <= 120) document.getElementById('timer-display').classList.add('timer-warning');
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('time-left').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                if (timeLeft <= 120) document.getElementById('timer-display').className = "timer-warning flex items-center gap-1.5 font-bold";
                 if (timeLeft <= 0) { clearInterval(timerInterval); submitTest(true); }
             }, 1000);
         }
@@ -229,7 +191,7 @@
             selectedQuestions.forEach((_, i) => {
                 const dot = document.createElement('button');
                 dot.id = `grid-item-${i}`;
-                dot.className = "w-8 h-8 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-400 flex items-center justify-center transition-all";
+                dot.className = "w-8 h-8 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-400";
                 dot.innerText = i + 1;
                 dot.onclick = () => { currentIdx = i; renderQuestion(); };
                 grid.appendChild(dot);
@@ -245,81 +207,70 @@
             const container = document.getElementById('options-container');
             container.innerHTML = "";
             q.options.forEach((opt, i) => {
-                const isSelected = answers[currentIdx] === i;
+                const sel = answers[currentIdx] === i;
                 const btn = document.createElement('button');
-                btn.className = `option-card relative flex items-center p-6 rounded-2xl border-2 transition-all text-left ${isSelected ? 'border-indigo-600 bg-indigo-50 text-indigo-900' : 'border-slate-100 bg-white text-slate-600'}`;
+                btn.className = `option-card p-6 rounded-2xl border-2 text-left ${sel ? 'border-indigo-600 bg-indigo-50 text-indigo-900 font-bold' : 'border-slate-100 bg-white text-slate-600'}`;
                 btn.onclick = () => { answers[currentIdx] = i; renderQuestion(); };
-                btn.innerHTML = `<div class="w-8 h-8 flex items-center justify-center rounded-lg font-bold mr-4 text-sm ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}">${String.fromCharCode(65 + i)}</div><span class="text-lg font-medium">${opt}</span>`;
+                btn.innerHTML = `<span class="inline-block w-8 h-8 rounded-lg ${sel ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'} text-center leading-8 mr-4 font-bold">${String.fromCharCode(65+i)}</span> ${opt}`;
                 container.appendChild(btn);
             });
             document.getElementById('prev-btn').disabled = currentIdx === 0;
-            document.getElementById('prev-btn').style.opacity = currentIdx === 0 ? "0.3" : "1";
-            if (currentIdx === 19) { document.getElementById('next-btn').classList.add('hidden'); document.getElementById('submit-btn').classList.remove('hidden'); }
-            else { document.getElementById('next-btn').classList.remove('hidden'); document.getElementById('submit-btn').classList.add('hidden'); }
-            updateProgressGrid();
-        }
-
-        function updateProgressGrid() {
+            document.getElementById('submit-btn').classList.toggle('hidden', currentIdx !== 19);
+            document.getElementById('next-btn').classList.toggle('hidden', currentIdx === 19);
             selectedQuestions.forEach((_, i) => {
                 const dot = document.getElementById(`grid-item-${i}`);
-                if (currentIdx === i) dot.className = "w-10 h-10 rounded-lg bg-indigo-600 text-white text-xs font-bold flex items-center justify-center scale-110 shadow-lg";
-                else if (answers[i] !== undefined) dot.className = "w-8 h-8 rounded-lg bg-indigo-100 border-indigo-200 text-indigo-700 text-xs font-bold flex items-center justify-center";
-                else dot.className = "w-8 h-8 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-400 flex items-center justify-center";
+                if (currentIdx === i) dot.className = "w-10 h-10 rounded-lg bg-indigo-600 text-white font-bold scale-110";
+                else if (answers[i] !== undefined) dot.className = "w-8 h-8 rounded-lg bg-indigo-100 border-indigo-200 text-indigo-700 font-bold";
+                else dot.className = "w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-400 font-bold";
             });
         }
 
-        function nextQuestion() { if (currentIdx < 19) { currentIdx++; renderQuestion(); } }
-        function prevQuestion() { if (currentIdx > 0) { currentIdx--; renderQuestion(); } }
-        function confirmSubmit() { if (confirm("Submit now?")) submitTest(); }
+        function nextQuestion() { if(currentIdx < 19) { currentIdx++; renderQuestion(); } }
+        function prevQuestion() { if(currentIdx > 0) { currentIdx--; renderQuestion(); } }
+        function confirmSubmit() { if(confirm("Submit test?")) submitTest(); }
 
-        async function submitTest(isAuto = false) {
+        async function submitTest(auto = false) {
             clearInterval(timerInterval);
             let score = 0;
             const details = selectedQuestions.map((q, i) => {
-                const chosen = answers[i] !== undefined ? q.options[answers[i]] : "No Answer";
-                const correct = chosen === q.correct;
-                if (correct) score++;
-                return { question: q.q, selected: chosen, correct: q.correct, isCorrect: correct };
+                const sel = answers[i] !== undefined ? q.options[answers[i]] : "No Answer";
+                const isCorrect = sel === q.correct;
+                if(isCorrect) score++;
+                return { question: q.q, selected: sel, correct: q.correct, isCorrect };
             });
 
             document.getElementById('test-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('submission-status').innerText = "Uploading results...";
+            document.getElementById('final-score-display').innerText = `${score}/20`;
+            document.getElementById('final-percent').innerText = `${Math.round(score/20*100)}%`;
+            document.getElementById('submission-status').innerText = "Uploading to Cloud...";
 
             if (window.db && window.auth.currentUser) {
                 try {
-                    const resultsRef = window.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'exam_results');
-                    await window.addDoc(resultsRef, {
+                    const ref = window.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'exam_results');
+                    await window.addDoc(ref, {
                         studentName: userName,
-                        score: score,
-                        percentage: Math.round((score / 20) * 100),
+                        score,
+                        percentage: Math.round(score/20*100),
                         timestamp: window.serverTimestamp(),
                         total: 20,
-                        details: details
+                        details
                     });
-                    document.getElementById('submission-status').innerText = "Results saved successfully to Cloud.";
-                } catch (e) { 
-                    console.warn("Cloud save failed."); 
-                    document.getElementById('submission-status').innerText = "Offline Mode: Results saved locally only.";
-                }
+                    document.getElementById('submission-status').innerText = "Submitted Successfully.";
+                } catch (e) { document.getElementById('submission-status').innerText = "Offline Mode: Saved locally."; }
             } else {
-                document.getElementById('submission-status').innerText = "Offline Mode: Results saved locally only.";
+                document.getElementById('submission-status').innerText = "Offline Mode: Saved locally.";
             }
-
-            document.getElementById('final-score-display').innerText = `${score}/20`;
-            document.getElementById('final-percent').innerText = `${Math.round((score / 20) * 100)}%`;
-            if (isAuto) document.getElementById('submission-status').innerText = "Time Up! Test automatically submitted.";
         }
 
         function downloadResult() {
             let score = 0;
-            selectedQuestions.forEach((q, i) => { if (answers[i] !== undefined && q.options[answers[i]] === q.correct) score++; });
-            const content = `STUDENT NAME: ${userName}\nSCORE: ${score}/20\nPERCENTAGE: ${Math.round((score/20)*100)}%\nDATE: ${new Date().toLocaleString()}\n`;
-            const element = document.createElement('a');
-            const file = new Blob([content], {type: 'text/plain'});
-            element.href = URL.createObjectURL(file);
-            element.download = `${userName.replace(/\s+/g, '_')}_Result.txt`;
-            element.click();
+            selectedQuestions.forEach((q, i) => { if(answers[i] !== undefined && q.options[answers[i]] === q.correct) score++; });
+            const blob = new Blob([`NAME: ${userName}\nSCORE: ${score}/20\n`], {type: 'text/plain'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${userName}_Result.txt`;
+            a.click();
         }
     </script>
 </body>
