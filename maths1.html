@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSS 3 Mathematics CBT - Randomised</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .option-card:hover { transform: translateY(-2px); }
+        .timer-warning { color: #ef4444; animation: pulse 1s infinite; }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-8 md:p-12 border border-slate-100">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 rotate-3 shadow-xl shadow-indigo-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-800">Mathematics CBT</h1>
+                <p class="text-slate-500 font-medium mt-1">JSS 3 First Term Exam</p>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-slate-600 mb-2">FULL NAME OF STUDENT</label>
+                    <input type="text" id="student-name" placeholder="Enter your name..." class="w-full bg-slate-50 border-2 border-slate-100 focus:border-indigo-500 rounded-xl px-5 py-4 text-lg outline-none transition-all">
+                </div>
+                <div class="bg-indigo-50 rounded-xl p-5 text-indigo-800 text-sm border border-indigo-100">
+                    <div class="flex items-center gap-2 font-bold mb-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>
+                        Exam Duration: 20 Minutes
+                    </div>
+                    <ul class="list-disc list-inside mt-2 text-indigo-700/80">
+                        <li>20 questions selected randomly.</li>
+                        <li>Shuffled question order for every student.</li>
+                        <li>Automatic submission when time expires.</li>
+                    </ul>
+                </div>
+                <button onclick="startTest()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg text-lg flex items-center justify-center gap-2">
+                    Start Test 
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Screen -->
+    <div id="test-screen" class="hidden min-h-screen flex flex-col max-w-5xl mx-auto md:py-8 px-4">
+        <header class="bg-white rounded-t-3xl border-b border-slate-100 p-6 flex items-center justify-between shadow-sm sticky top-0 z-10">
+            <div class="flex items-center gap-4">
+                <div id="q-number-box" class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-100">1</div>
+                <div>
+                    <h2 id="q-header" class="text-lg font-bold text-slate-800">Question 1 of 20</h2>
+                    <div id="timer-display" class="flex items-center gap-1.5 font-bold text-indigo-600 tabular-nums">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span id="time-left">20:00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-right hidden sm:block">
+                <p id="display-name" class="text-sm font-bold text-slate-700"></p>
+                <div class="flex items-center gap-1 text-green-500 text-xs font-bold uppercase justify-end">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Active
+                </div>
+            </div>
+        </header>
+
+        <div class="w-full h-2 bg-slate-200">
+            <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-300" style="width: 5%"></div>
+        </div>
+
+        <main class="bg-white p-8 md:p-12 flex-grow min-h-[400px]">
+            <h3 id="question-text" class="text-2xl font-bold text-slate-800 leading-snug mb-10">Loading question...</h3>
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Options injected here -->
+            </div>
+        </main>
+
+        <footer class="bg-white border-t border-slate-100 p-6 rounded-b-3xl flex items-center justify-between shadow-xl">
+            <button onclick="prevQuestion()" id="prev-btn" class="px-6 py-3 font-bold text-slate-400 hover:text-slate-800 flex items-center gap-2">
+                &larr; Previous
+            </button>
+            <div id="nav-btns">
+                <button onclick="nextQuestion()" id="next-btn" class="bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg active:scale-95">
+                    Next Question &rarr;
+                </button>
+                <button onclick="confirmSubmit()" id="submit-btn" class="hidden bg-green-600 text-white px-10 py-4 rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg active:scale-95">
+                    Submit Exam
+                </button>
+            </div>
+        </footer>
+
+        <div id="progress-grid" class="mt-6 flex flex-wrap justify-center gap-2 pb-10">
+            <!-- Grid items injected here -->
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="hidden min-h-screen flex items-center justify-center p-4 bg-slate-50">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-md w-full p-10 text-center">
+            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-black text-slate-800 mb-2">Test Completed</h1>
+            <p class="text-slate-500 mb-8" id="submission-status">Here is your performance report.</p>
+            
+            <div class="bg-slate-50 rounded-3xl p-8 mb-8 border border-slate-100">
+                <p class="text-xs uppercase tracking-[0.2em] font-black text-slate-400 mb-2">Final Score</p>
+                <div id="final-score-display" class="text-7xl font-black text-indigo-600">0/20</div>
+                <div id="final-percent" class="text-2xl font-bold text-slate-700 mt-2">0%</div>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="downloadResult()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-xl hover:bg-black transition-all flex items-center justify-center gap-2 shadow-lg">
+                    Download Result Slip
+                </button>
+                <button onclick="location.reload()" class="w-full text-slate-400 font-bold py-2 hover:text-slate-600 transition-all">Logout & Exit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MASTER POOL: 40 questions exactly as in document
+        const MASTER_QUESTIONS = [
+            { q: "(1) Convert 75ten to base 4", options: ["1103four", "1233four", "1023four", "3201four"], correct: "1023four" },
+            { q: "(2) Express 243five in base 10", options: ["68ten", "56ten", "84ten", "73ten"], correct: "73ten" },
+            { q: "(3) Find the square root of 100100two in base two", options: ["111two", "110two", "101two", "100two"], correct: "110two" },
+            { q: "(4) The sum of a certain number and 13 is 30. What is the number?", options: ["78", "17", "23", "4"], correct: "17" },
+            { q: "(5) Find the sum of 0.9 and the product of 1.7 and 3", options: ["11", "6", "8.3", "6.3"], correct: "6" },
+            { q: "(6) Divide 40 by the sum of 3 and 5", options: ["4", "6", "5", "12"], correct: "5" },
+            { q: "(7) Remove brackets from the expression 3[2x – y]", options: ["6x – 3y", "2x + 3", "8x – y", "3x + y"], correct: "6x – 3y" },
+            { q: "(8) Factorize x2 – 49", options: ["[x + 7][x – 7]", "[x + 9][x – 9]", "[x + 49][x – 49]", "[x – 9][x – 9]"], correct: "[x + 7][x – 7]" },
+            { q: "(9) Solve 11/4 + 33/2x = 0", options: ["x = 5", "x = – 6", "x = 12", "x = 4"], correct: "x = – 6" },
+            { q: "(10) Find the compound interest on N60,000 for 2 years at 8% per annum.", options: ["N4,800", "N45,000", "N9,984", "N69,984"], correct: "N9,984" },
+            { q: "(11) If y = 3 – x, find the value of y when x = 4", options: ["0", "– 1", "2", "3"], correct: "– 1" },
+            { q: "(12) Express x in terms of y in the formula 3x – 2y = 8", options: ["x = y + ⅔", "x = 2y – 8", "x = 8+2y3", "x = 2y3 – 8"], correct: "x = 8+2y3" },
+            { q: "(13) If y varies directly as x and y = 5 when x = 2, find the value of y when x = 4.", options: ["5/2", "12", "10", "15"], correct: "10" },
+            { q: "(14) The area A of a circle varies directly as the square of its radius r. Find the relationship between A and r if A = 50 m2 when r = 2.5 m", options: ["A = 8r", "k = 50/2.5", "A = 8r2", "50"], correct: "A = 8r2" },
+            { q: "(15) Change 10010two to base ten", options: ["25ten", "18ten", "9ten", "15ten"], correct: "18ten" },
+            { q: "(16) The sum of three consecutive even numbers is 72. The highest of the three numbers is ___", options: ["36", "24", "6", "8"], correct: "36" }, // Note: Kept doc's key
+            { q: "(17) Find one-sixth of the positive difference between 36 and 63", options: ["4.5", "8", "3.2", "18"], correct: "4.5" },
+            { q: "(18) What is the product of 50% of 30 and 25% of 40?", options: ["30", "25", "150", "35"], correct: "150" },
+            { q: "(19) Factorize 42x3 – 28xy", options: ["14x [3x2 – 2y]", "3y [12x – 14y]", "10x [21x2 – 2y]", "8x [x2 – 12y]"], correct: "14x [3x2 – 2y]" },
+            { q: "(20) Factorize 3xy – 6xz – 5ay + 10az", options: ["[3 – 2a][x + y]", "[x + 3z][5 – 2z]", "[3x – 5a][y – 2z]", "[3x – 6z][5a – 10z]"], correct: "[3x – 5a][y – 2z]" },
+            { q: "(21) A triangle of base b cm and height h cm has an area A cm3 given by A = ½bh . Find the area when b = 5 and h = 7", options: ["18cm3", "25 cm3", "15.5 cm3", "17.5 cm3"], correct: "17.5 cm3" },
+            { q: "(22) The highest common factor of 10a2b and 8ab is", options: ["80a2b", "2ab", "5a", "1¼ a"], correct: "2ab" },
+            { q: "(23) If y = x+9x-3, find the value of y when x = 5", options: ["7", "6", "– 5", "– 2"], correct: "7" },
+            { q: "(24) Express v in terms of u and f in the formula 1/f = 1/u + 1/v", options: ["[u – f]/fu", "fu x [u – f]", "fu/[u – f]", "1/fu"], correct: "fu/[u – f]" },
+            { q: "(25) If 92x=10-8x, then x is ____", options: ["5/4", "3/2", "4/5", "7/10"], correct: "5/4" },
+            { q: "(26) If 3x – y = 14 and 7x – y = 46, then x is ____", options: ["16", "4", "8", "12"], correct: "8" },
+            { q: "(27) Solve for x in 1x=54x+7", options: ["x = 12", "x = 8", "x = 7", "x = 5"], correct: "x = 7" },
+            { q: "(28) Find x when y = 4 in y = 5x + 8", options: ["– ⅘", "⅘", "⅛", "⅔"], correct: "– ⅘" },
+            { q: "(29) Solve the simultaneous equations: 2x – y = 6 and 3x + 2y = 2", options: ["x = 2, y = 2", "x = 2, y = – 2", "x = 3, y = 2", "x = – 3, y = 2"], correct: "x = 2, y = – 2" },
+            { q: "(30) Four pens and six pencils cost N1,360 altogether. Six pens and five pencils cost N1,640. How much does a pen and a pencil cost altogether?", options: ["N190", "N290", "N100", "N360"], correct: "N290" },
+            { q: "(31) Find the value of [101two]3 in base 2", options: ["1 111 101two", "1 010 011two", "1 100 111two", "1 001 001two"], correct: "1 111 101two" },
+            { q: "(32) The sum of four consecutive numbers is 58. Which of the following is not one of the numbers?", options: ["12", "13", "14", "15"], correct: "12" },
+            { q: "(33) Find the discount price, if a discount of 25% is given on a market price of N9,200", options: ["N4,800", "N6,900", "N5,400", "N8,000"], correct: "N6,900" },
+            { q: "(34) Find one-ninth of the positive difference between 55 and the sum of 12 and 7", options: ["12", "8", "28", "4"], correct: "4" },
+            { q: "(35) Factorize 2x2 – 3x + 2x – 3", options: ["[2x - 3][x – 1]", "[x - 3][2x + 1]", "[x + 1][x - 3]", "[2x - 3][x + 1]"], correct: "[2x - 3][x + 1]" },
+            { q: "(36) If W = VI, calculate the value of I when W = 100 and V = 240", options: ["5/8", "5/12", "12", "60"], correct: "5/12" },
+            { q: "(37) The formula c = 180n + 450 gives the daily cost, c naira, of running a household of n people. Calculate the daily cost for 5 people.", options: ["N1,500", "N4,500", "N1,250", "N1,350"], correct: "N1,350" },
+            { q: "(38) The sum of 35 and a certain number is divided by 4. The result is equal to double the number. Find the number.", options: ["5", "82", "142", "122"], correct: "5" },
+            { q: "(39) Find the HCF of 30ad and 28ax", options: ["2ax", "4x", "7a", "2a"], correct: "2a" },
+            { q: "(40) Solve for y in (y + 8 ) + 2 (y + 1) = 0.", options: ["9/2", "– 10/3", "– 3/2", "4/5"], correct: "– 10/3" }
+        ];
+
+        let selectedQuestions = [];
+        let currentIdx = 0;
+        let userName = "";
+        let answers = {};
+        let timeLeft = 20 * 60;
+        let timerInterval;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startTest() {
+            userName = document.getElementById('student-name').value.trim();
+            if (!userName) { alert("Please enter your name!"); return; }
+
+            // 1. Shuffle all 40 questions
+            const shuffledFull = shuffle([...MASTER_QUESTIONS]);
+            // 2. Take top 20
+            selectedQuestions = shuffledFull.slice(0, 20).map(q => {
+                // Shuffle options for each selected question
+                const originalCorrect = q.correct;
+                const shuffledOptions = shuffle([...q.options]);
+                return { ...q, options: shuffledOptions, correctVal: originalCorrect };
+            });
+
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('test-screen').classList.remove('hidden');
+            document.getElementById('display-name').innerText = userName;
+            
+            initProgressGrid();
+            renderQuestion();
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) { clearInterval(timerInterval); submitTest(true); }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const display = document.getElementById('time-left');
+            display.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            if (timeLeft <= 120) document.getElementById('timer-display').classList.add('timer-warning');
+        }
+
+        function initProgressGrid() {
+            const grid = document.getElementById('progress-grid');
+            grid.innerHTML = "";
+            selectedQuestions.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.id = `grid-item-${i}`;
+                dot.className = "w-8 h-8 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-400 flex items-center justify-center transition-all";
+                dot.innerText = i + 1;
+                dot.onclick = () => { currentIdx = i; renderQuestion(); };
+                grid.appendChild(dot);
+            });
+        }
+
+        function renderQuestion() {
+            const q = selectedQuestions[currentIdx];
+            document.getElementById('q-number-box').innerText = currentIdx + 1;
+            document.getElementById('q-header').innerText = `Question ${currentIdx + 1} of 20`;
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / 20) * 100}%`;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = "";
+            q.options.forEach((opt, i) => {
+                const isSelected = answers[currentIdx] === i;
+                const btn = document.createElement('button');
+                btn.className = `option-card group relative flex items-center p-6 rounded-2xl border-2 transition-all text-left ${isSelected ? 'border-indigo-600 bg-indigo-50 text-indigo-900 shadow-md ring-1 ring-indigo-200' : 'border-slate-100 bg-white text-slate-600 hover:border-slate-200 hover:bg-slate-50'}`;
+                btn.onclick = () => { answers[currentIdx] = i; renderQuestion(); };
+                btn.innerHTML = `
+                    <div class="w-8 h-8 flex items-center justify-center rounded-lg font-bold mr-4 text-sm transition-colors ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'}">
+                        ${String.fromCharCode(65 + i)}
+                    </div>
+                    <span class="text-lg font-medium">${opt}</span>
+                    ${isSelected ? '<svg xmlns="http://www.w3.org/2000/svg" class="absolute top-4 right-4 h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>' : ''}
+                `;
+                container.appendChild(btn);
+            });
+
+            document.getElementById('prev-btn').disabled = currentIdx === 0;
+            document.getElementById('prev-btn').style.opacity = currentIdx === 0 ? "0.3" : "1";
+            
+            if (currentIdx === 19) {
+                document.getElementById('next-btn').classList.add('hidden');
+                document.getElementById('submit-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('next-btn').classList.remove('hidden');
+                document.getElementById('submit-btn').classList.add('hidden');
+            }
+            updateProgressGrid();
+        }
+
+        function updateProgressGrid() {
+            selectedQuestions.forEach((_, i) => {
+                const dot = document.getElementById(`grid-item-${i}`);
+                if (currentIdx === i) dot.className = "w-10 h-10 rounded-lg bg-indigo-600 text-white text-xs font-bold flex items-center justify-center scale-110 shadow-lg z-10";
+                else if (answers[i] !== undefined) dot.className = "w-8 h-8 rounded-lg bg-indigo-100 border-indigo-200 text-indigo-700 text-xs font-bold flex items-center justify-center";
+                else dot.className = "w-8 h-8 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-400 flex items-center justify-center";
+            });
+        }
+
+        function nextQuestion() { if (currentIdx < 19) { currentIdx++; renderQuestion(); } }
+        function prevQuestion() { if (currentIdx > 0) { currentIdx--; renderQuestion(); } }
+
+        function confirmSubmit() { if (confirm("Ready to submit?")) submitTest(); }
+
+        function submitTest(isAuto = false) {
+            clearInterval(timerInterval);
+            let score = 0;
+            selectedQuestions.forEach((q, i) => {
+                if (answers[i] !== undefined && q.options[answers[i]] === q.correctVal) score++;
+            });
+
+            document.getElementById('test-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score-display').innerText = `${score}/20`;
+            document.getElementById('final-percent').innerText = `${Math.round((score / 20) * 100)}%`;
+            if (isAuto) document.getElementById('submission-status').innerText = "Time Up! Auto-submitted.";
+        }
+
+        function downloadResult() {
+            let score = 0;
+            selectedQuestions.forEach((q, i) => { if (answers[i] !== undefined && q.options[answers[i]] === q.correctVal) score++; });
+            const content = `STUDENT NAME: ${userName}\nSCORE: ${score}/20\nPERCENTAGE: ${Math.round((score/20)*100)}%\nDATE: ${new Date().toLocaleString()}\n`;
+            const element = document.createElement('a');
+            const file = new Blob([content], {type: 'text/plain'});
+            element.href = URL.createObjectURL(file);
+            element.download = `${userName}_Math_Result.txt`;
+            element.click();
+        }
+    </script>
+</body>
+</html>
