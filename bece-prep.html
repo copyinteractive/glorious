@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maths BECE Preparation CBT</title>
+    <title>BECE Maths Prep CBT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
@@ -69,8 +69,8 @@
             </div>
             <div class="text-right hidden sm:block">
                 <p id="display-name" class="text-sm font-bold text-slate-700"></p>
-                <div id="status-indicator" class="flex items-center gap-1 text-amber-500 text-xs font-bold uppercase justify-end">
-                    <span class="w-2 h-2 rounded-full bg-amber-500"></span> Connecting...
+                <div id="status-indicator" class="flex items-center gap-1 text-slate-400 text-xs font-bold uppercase justify-end">
+                    Offline Mode
                 </div>
             </div>
         </header>
@@ -102,7 +102,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
             <h1 class="text-3xl font-black text-slate-800 mb-2">Test Completed</h1>
-            <p class="text-slate-500 mb-8" id="submission-status">Your performance report is ready.</p>
+            <p class="text-slate-500 mb-8" id="submission-status">Calculating results...</p>
             
             <div class="bg-slate-50 rounded-3xl p-8 mb-8 border border-slate-100">
                 <p class="text-xs uppercase tracking-[0.2em] font-black text-slate-400 mb-2">Final Score</p>
@@ -123,7 +123,8 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = JSON.parse(__firebase_config);
+        // Firebase Configuration
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -136,23 +137,28 @@
         window.collection = collection;
         window.serverTimestamp = serverTimestamp;
 
-        const initAuth = async () => {
+        const init = async () => {
             try {
+                // RULE 3: Call sign in FIRST and await it
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
                     await signInAnonymously(auth);
                 }
-            } catch (err) { console.warn("Offline."); }
-        };
-        initAuth();
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('status-indicator').innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Cloud Active';
-                document.getElementById('status-indicator').className = 'flex items-center gap-1 text-green-500 text-xs font-bold uppercase justify-end';
+            } catch (err) {
+                console.warn("Auth failed, student is in offline-only mode.");
             }
-        });
+
+            // Track state for UI feedback
+            onAuthStateChanged(auth, (user) => {
+                const indicator = document.getElementById('status-indicator');
+                if (user && indicator) {
+                    indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Cloud Active';
+                    indicator.className = 'flex items-center gap-1 text-green-500 text-xs font-bold uppercase justify-end';
+                }
+            });
+        };
+        init();
     </script>
 
     <script>
@@ -276,6 +282,10 @@
                 return { question: q.q, selected: chosen, correct: q.correct, isCorrect: correct };
             });
 
+            document.getElementById('test-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('submission-status').innerText = "Uploading results...";
+
             if (window.db && window.auth.currentUser) {
                 try {
                     const resultsRef = window.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'exam_results');
@@ -287,20 +297,24 @@
                         total: 20,
                         details: details
                     });
-                } catch (e) { console.warn("Saved locally."); }
+                    document.getElementById('submission-status').innerText = "Results saved successfully to Cloud.";
+                } catch (e) { 
+                    console.warn("Cloud save failed."); 
+                    document.getElementById('submission-status').innerText = "Offline Mode: Results saved locally only.";
+                }
+            } else {
+                document.getElementById('submission-status').innerText = "Offline Mode: Results saved locally only.";
             }
 
-            document.getElementById('test-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
             document.getElementById('final-score-display').innerText = `${score}/20`;
             document.getElementById('final-percent').innerText = `${Math.round((score / 20) * 100)}%`;
-            if (isAuto) document.getElementById('submission-status').innerText = "Time Up! Auto-submitted.";
+            if (isAuto) document.getElementById('submission-status').innerText = "Time Up! Test automatically submitted.";
         }
 
         function downloadResult() {
             let score = 0;
             selectedQuestions.forEach((q, i) => { if (answers[i] !== undefined && q.options[answers[i]] === q.correct) score++; });
-            const content = `STUDENT NAME: ${userName}\nSCORE: ${score}/20\nDATE: ${new Date().toLocaleString()}\n`;
+            const content = `STUDENT NAME: ${userName}\nSCORE: ${score}/20\nPERCENTAGE: ${Math.round((score/20)*100)}%\nDATE: ${new Date().toLocaleString()}\n`;
             const element = document.createElement('a');
             const file = new Blob([content], {type: 'text/plain'});
             element.href = URL.createObjectURL(file);
