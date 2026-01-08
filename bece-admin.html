@@ -25,8 +25,8 @@
 
         <!-- Main List -->
         <div id="loading-box" class="bg-white rounded-3xl p-20 text-center shadow-sm border border-slate-200">
-            <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full inline-block mb-4"></div>
-            <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Accessing Cloud Database...</p>
+            <div id="spinner" class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full inline-block mb-4"></div>
+            <p id="loading-text" class="text-slate-400 font-bold uppercase tracking-widest text-xs">Accessing Cloud Database...</p>
         </div>
 
         <div id="results-table" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -70,52 +70,76 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = JSON.parse(__firebase_config);
+        // Setup
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'jss3-math-cbt';
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const ref = collection(db, 'artifacts', appId, 'public', 'data', 'exam_results');
-                onSnapshot(ref, (snap) => {
-                    document.getElementById('loading-box').classList.add('hidden');
-                    document.getElementById('results-table').classList.remove('hidden');
-                    
-                    const list = document.getElementById('student-list');
-                    if(snap.empty) {
-                        list.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white rounded-2xl">No submissions found.</div>`;
-                        return;
-                    }
-
-                    const data = [];
-                    snap.forEach(doc => data.push({id: doc.id, ...doc.data()}));
-                    data.sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-
-                    list.innerHTML = data.map(res => `
-                        <button onclick="window.viewDetails('${res.id}')" class="w-full bg-white p-5 rounded-2xl shadow-sm border border-slate-200 hover:border-indigo-400 transition-all flex justify-between items-center group">
-                            <div class="text-left">
-                                <p class="font-bold text-slate-800">${res.studentName}</p>
-                                <p class="text-xs text-slate-400">${res.timestamp ? new Date(res.timestamp.seconds*1000).toLocaleTimeString() : 'Recently'}</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-lg font-black text-slate-800">${res.score}/20</span>
-                            </div>
-                        </button>
-                    `).join('');
-
-                    window.allData = data;
-                });
-            } else {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) signInWithCustomToken(auth, __initial_auth_token);
-                else signInAnonymously(auth);
+        const initDashboard = async () => {
+            try {
+                // RULE 3: Await sign in FIRST
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                document.getElementById('loading-text').innerText = "Authentication Error. Please check internet.";
+                document.getElementById('spinner').classList.add('hidden');
+                return;
             }
-        });
+
+            // Listen for successful auth
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const resultsRef = collection(db, 'artifacts', appId, 'public', 'data', 'exam_results');
+                    
+                    // Success and Error callbacks for onSnapshot
+                    onSnapshot(resultsRef, (snap) => {
+                        document.getElementById('loading-box').classList.add('hidden');
+                        document.getElementById('results-table').classList.remove('hidden');
+                        
+                        const list = document.getElementById('student-list');
+                        if (snap.empty) {
+                            list.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-100 font-bold">No results recorded yet.</div>`;
+                            return;
+                        }
+
+                        const data = [];
+                        snap.forEach(doc => data.push({ id: doc.id, ...doc.data() }));
+                        
+                        // RULE 2: Sort in memory
+                        data.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+
+                        list.innerHTML = data.map(res => `
+                            <button onclick="window.viewDetails('${res.id}')" class="w-full bg-white p-5 rounded-2xl shadow-sm border border-slate-200 hover:border-indigo-400 transition-all flex justify-between items-center group text-left">
+                                <div>
+                                    <p class="font-bold text-slate-800">${res.studentName || 'Unknown Student'}</p>
+                                    <p class="text-xs text-slate-400 font-medium">${res.timestamp ? new Date(res.timestamp.seconds * 1000).toLocaleTimeString() : 'Recent'}</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-lg font-black text-indigo-600">${res.score || 0}/20</span>
+                                </div>
+                            </button>
+                        `).join('');
+
+                        window.allData = data;
+                    }, (error) => {
+                        console.error("Database error:", error);
+                        document.getElementById('loading-text').innerText = "Database Access Error. Check network or permissions.";
+                        document.getElementById('spinner').classList.add('hidden');
+                    });
+                }
+            });
+        };
+
+        initDashboard();
 
         window.viewDetails = (id) => {
             const res = window.allData.find(d => d.id === id);
-            if(!res) return;
+            if (!res) return;
 
             document.getElementById('empty-detail').classList.add('hidden');
             document.getElementById('detail-pane').classList.remove('hidden');
@@ -123,18 +147,18 @@
             document.getElementById('det-name').innerText = res.studentName;
             document.getElementById('det-score').innerText = `${res.score}/20`;
             document.getElementById('det-percent').innerText = `${res.percentage}%`;
-            document.getElementById('det-time').innerText = res.timestamp ? new Date(res.timestamp.seconds*1000).toLocaleString() : '';
+            document.getElementById('det-time').innerText = res.timestamp ? new Date(res.timestamp.seconds * 1000).toLocaleString() : 'Timestamp unavailable';
 
             const container = document.getElementById('det-questions');
-            if(!res.details) {
-                container.innerHTML = `<p class="text-slate-400 italic">No question breakdown available for this record.</p>`;
+            if (!res.details || res.details.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 italic text-center py-10">No detailed breakdown available for this record.</p>`;
                 return;
             }
 
             container.innerHTML = res.details.map((q, i) => `
                 <div class="p-5 rounded-2xl border ${q.isCorrect ? 'border-green-100 bg-green-50/30' : 'border-red-100 bg-red-50/30'}">
-                    <p class="text-xs font-black text-slate-400 uppercase mb-2">Question ${i+1}</p>
-                    <p class="font-bold text-slate-800 mb-4">${q.question}</p>
+                    <p class="text-xs font-black text-slate-400 uppercase mb-2">Question ${i + 1}</p>
+                    <p class="font-bold text-slate-800 mb-4 leading-relaxed">${q.question}</p>
                     <div class="grid grid-cols-2 gap-4 text-sm">
                         <div class="bg-white p-3 rounded-xl border border-slate-100">
                             <span class="block text-[10px] font-black uppercase text-slate-400 mb-1">Student Answer</span>
@@ -147,6 +171,9 @@
                     </div>
                 </div>
             `).join('');
+            
+            // Scroll to top of pane
+            document.getElementById('det-questions').scrollTop = 0;
         };
     </script>
 </body>
