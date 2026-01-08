@@ -23,16 +23,16 @@
             </button>
         </header>
 
-        <!-- Main List -->
-        <div id="loading-box" class="bg-white rounded-3xl p-20 text-center shadow-sm border border-slate-200">
+        <!-- Loading / Error Box -->
+        <div id="status-box" class="bg-white rounded-3xl p-20 text-center shadow-sm border border-slate-200">
             <div id="spinner" class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full inline-block mb-4"></div>
-            <p id="loading-text" class="text-slate-400 font-bold uppercase tracking-widest text-xs">Accessing Cloud Database...</p>
+            <p id="loading-text" class="text-slate-400 font-bold uppercase tracking-widest text-xs">Initializing Secure Connection...</p>
         </div>
 
         <div id="results-table" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Student List -->
             <div class="lg:col-span-1 space-y-4">
-                <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest px-2">Student Submissions</h2>
+                <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest px-2 text-center md:text-left">Student Submissions</h2>
                 <div id="student-list" class="space-y-3">
                     <!-- List items injected -->
                 </div>
@@ -40,7 +40,7 @@
 
             <!-- Detailed View -->
             <div class="lg:col-span-2">
-                <div id="empty-detail" class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-20 text-center flex flex-col items-center justify-center">
+                <div id="empty-detail" class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-20 text-center flex flex-col items-center justify-center min-h-[400px]">
                     <p class="text-slate-400 font-medium">Select a student from the left to view their detailed grading sheet.</p>
                 </div>
 
@@ -52,8 +52,8 @@
                                 <p id="det-time" class="text-indigo-200 text-sm mt-1"></p>
                             </div>
                             <div class="text-right">
-                                <div id="det-score" class="text-4xl font-black">15/20</div>
-                                <div id="det-percent" class="text-indigo-200 font-bold">75%</div>
+                                <div id="det-score" class="text-4xl font-black">0/20</div>
+                                <div id="det-percent" class="text-indigo-200 font-bold">0%</div>
                             </div>
                         </div>
                     </div>
@@ -70,56 +70,72 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Setup
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'jss3-math-cbt';
+        // Configuration check
+        let firebaseConfig;
+        try {
+            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        } catch (e) {
+            console.error("Firebase config parse error", e);
+        }
 
-        const initDashboard = async () => {
-            try {
-                // RULE 3: Await sign in FIRST
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+        if (!firebaseConfig) {
+            document.getElementById('loading-text').innerText = "Configuration Missing. Open in the correct environment.";
+            document.getElementById('spinner').classList.add('hidden');
+        } else {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'jss3-math-cbt';
+
+            let unsubscribeResults = null;
+
+            const initDashboard = async () => {
+                try {
+                    document.getElementById('loading-text').innerText = "Authenticating Admin...";
+                    
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (err) {
+                    console.error("Auth error", err);
+                    document.getElementById('loading-text').innerText = "Authentication Failed. Please check internet.";
+                    document.getElementById('spinner').classList.add('hidden');
                 }
-            } catch (err) {
-                document.getElementById('loading-text').innerText = "Authentication Error. Please check internet.";
-                document.getElementById('spinner').classList.add('hidden');
-                return;
-            }
+            };
 
-            // Listen for successful auth
             onAuthStateChanged(auth, (user) => {
                 if (user) {
+                    document.getElementById('loading-text').innerText = "Fetching Results...";
+                    
                     const resultsRef = collection(db, 'artifacts', appId, 'public', 'data', 'exam_results');
                     
-                    // Success and Error callbacks for onSnapshot
-                    onSnapshot(resultsRef, (snap) => {
-                        document.getElementById('loading-box').classList.add('hidden');
+                    if (unsubscribeResults) unsubscribeResults();
+
+                    unsubscribeResults = onSnapshot(resultsRef, (snap) => {
+                        document.getElementById('status-box').classList.add('hidden');
                         document.getElementById('results-table').classList.remove('hidden');
                         
                         const list = document.getElementById('student-list');
                         if (snap.empty) {
-                            list.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-100 font-bold">No results recorded yet.</div>`;
+                            list.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-100 font-bold">No results found yet. Have students submitted?</div>`;
                             return;
                         }
 
                         const data = [];
                         snap.forEach(doc => data.push({ id: doc.id, ...doc.data() }));
                         
-                        // RULE 2: Sort in memory
+                        // Sort by newest first
                         data.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
                         list.innerHTML = data.map(res => `
                             <button onclick="window.viewDetails('${res.id}')" class="w-full bg-white p-5 rounded-2xl shadow-sm border border-slate-200 hover:border-indigo-400 transition-all flex justify-between items-center group text-left">
                                 <div>
-                                    <p class="font-bold text-slate-800">${res.studentName || 'Unknown Student'}</p>
+                                    <p class="font-bold text-slate-800 truncate pr-2">${res.studentName || 'Unknown Student'}</p>
                                     <p class="text-xs text-slate-400 font-medium">${res.timestamp ? new Date(res.timestamp.seconds * 1000).toLocaleTimeString() : 'Recent'}</p>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-right shrink-0">
                                     <span class="text-lg font-black text-indigo-600">${res.score || 0}/20</span>
                                 </div>
                             </button>
@@ -127,18 +143,23 @@
 
                         window.allData = data;
                     }, (error) => {
-                        console.error("Database error:", error);
-                        document.getElementById('loading-text').innerText = "Database Access Error. Check network or permissions.";
+                        console.error("Database error", error);
+                        document.getElementById('loading-text').innerText = "Access Denied. Ensure permissions are set correctly.";
                         document.getElementById('spinner').classList.add('hidden');
+                        document.getElementById('status-box').classList.remove('hidden');
                     });
+                } else {
+                    document.getElementById('status-box').classList.remove('hidden');
+                    document.getElementById('results-table').classList.add('hidden');
+                    document.getElementById('loading-text').innerText = "Session Expired. Re-authenticating...";
                 }
             });
-        };
 
-        initDashboard();
+            initDashboard();
+        }
 
         window.viewDetails = (id) => {
-            const res = window.allData.find(d => d.id === id);
+            const res = window.allData?.find(d => d.id === id);
             if (!res) return;
 
             document.getElementById('empty-detail').classList.add('hidden');
@@ -151,7 +172,7 @@
 
             const container = document.getElementById('det-questions');
             if (!res.details || res.details.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 italic text-center py-10">No detailed breakdown available for this record.</p>`;
+                container.innerHTML = `<p class="text-slate-400 italic text-center py-10">Detailed answer logs were not saved for this record.</p>`;
                 return;
             }
 
@@ -172,8 +193,7 @@
                 </div>
             `).join('');
             
-            // Scroll to top of pane
-            document.getElementById('det-questions').scrollTop = 0;
+            document.getElementById('detail-pane').scrollIntoView({ behavior: 'smooth', block: 'start' });
         };
     </script>
 </body>
