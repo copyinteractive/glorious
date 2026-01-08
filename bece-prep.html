@@ -19,22 +19,22 @@
     <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-8 md:p-12 border border-slate-100">
             <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 rotate-3 shadow-xl shadow-indigo-200">
+                <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 rotate-3 shadow-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
                 </div>
                 <h1 class="text-3xl font-extrabold text-slate-800">Mathematics CBT</h1>
-                <p class="text-slate-500 font-medium">JSS 3 First Term Exam</p>
+                <p class="text-slate-500 font-medium italic">JSS 3 First Term Examination</p>
             </div>
             <div class="space-y-6">
                 <div>
                     <label class="block text-sm font-bold text-slate-600 mb-2 uppercase tracking-wide">Student Full Name</label>
                     <input type="text" id="student-name" placeholder="Enter your name..." class="w-full bg-slate-50 border-2 border-slate-100 focus:border-indigo-500 rounded-xl px-5 py-4 text-lg outline-none transition-all placeholder:text-slate-300">
                 </div>
-                <div class="bg-indigo-50 rounded-2xl p-5 text-indigo-800 text-sm border border-indigo-100 flex items-start gap-3">
+                <div class="bg-indigo-50 rounded-xl p-5 text-indigo-800 text-sm border border-indigo-100 flex items-start gap-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <p><strong>Duration:</strong> 20 Minutes<br><strong>Questions:</strong> 20 Random Items<br>Results are saved automatically to the cloud if connected.</p>
+                    <p><strong>Duration:</strong> 20 Minutes<br><strong>System:</strong> Randomised Selection<br>Your score is saved to the cloud automatically.</p>
                 </div>
-                <button onclick="startTest()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg text-lg active:scale-95">Start Examination</button>
+                <button onclick="startTest()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg text-lg active:scale-95">Start Exam</button>
             </div>
         </div>
     </div>
@@ -51,7 +51,7 @@
             </div>
             <div class="text-right hidden sm:block">
                 <p id="display-name" class="text-sm font-bold text-slate-700 uppercase"></p>
-                <div id="status-indicator" class="flex items-center gap-1 text-slate-400 text-xs font-black uppercase tracking-tighter justify-end">Offline</div>
+                <div id="status-indicator" class="flex items-center gap-1 text-slate-400 text-xs font-black uppercase tracking-tighter justify-end">Ready</div>
             </div>
         </header>
 
@@ -81,13 +81,13 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
             <h1 class="text-3xl font-black text-slate-800 mb-2">Test Completed</h1>
-            <p class="text-slate-500 mb-8 font-medium" id="submission-status">Processing Score...</p>
+            <p class="text-slate-500 mb-8 font-medium" id="submission-status">Calculating Results...</p>
             <div class="bg-slate-50 rounded-3xl p-8 mb-8 border border-slate-100">
                 <div id="final-score-display" class="text-7xl font-black text-indigo-600">0/20</div>
                 <div id="final-percent" class="text-2xl font-bold text-slate-700 mt-2">0%</div>
             </div>
             <button onclick="downloadResult()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-xl shadow-lg mb-3">Download Result Slip</button>
-            <button onclick="location.reload()" class="w-full text-slate-400 font-bold py-2">Close & Exit</button>
+            <button onclick="location.reload()" class="w-full text-slate-400 font-bold py-2">Exit Browser</button>
         </div>
     </div>
 
@@ -97,31 +97,35 @@
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // =============================================================
-        // GITHUB HOSTING SETUP: 
-        // Copy the code from the 'GitHub Setup' button in your 
-        // Teacher Dashboard and paste it over the 'null' below.
+        // GITHUB LINK: Copy the code block from your Admin Dashboard
+        // (GitHub Setup button) and paste it over the 'null' below.
         // =============================================================
-        const GITHUB_CONFIG = {
-"apiKey": "AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY",
-"authDomain": "bard-frontend.firebaseapp.com",
-"projectId": "bard-frontend",
-"storageBucket": "bard-frontend.firebasestorage.app",
-"messagingSenderId": "175205271074",
-"appId": "1:175205271074:web:2b7bd4d34d33bf38e6ec7b"
+        const GITHUB_SETUP = {
+  "config": {
+    "apiKey": "AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY",
+    "authDomain": "bard-frontend.firebaseapp.com",
+    "projectId": "bard-frontend",
+    "storageBucket": "bard-frontend.firebasestorage.app",
+    "messagingSenderId": "175205271074",
+    "appId": "1:175205271074:web:2b7bd4d34d33bf38e6ec7b"
+  },
+  "id": "c_f3b99b3b056a792b_teacher_dashboard.html-466"
 }; 
 
         const envConfig = window.__firebase_config ? JSON.parse(window.__firebase_config) : null;
-        const config = GITHUB_CONFIG || envConfig;
-        const appId = window.__app_id || 'jss3-math-cbt';
+        const envId = window.__app_id || null;
 
-        if (config) {
-            const app = initializeApp(config);
+        // Combine provided setup or environment fallback
+        const setup = GITHUB_SETUP || { config: envConfig, id: envId };
+
+        if (setup.config) {
+            const app = initializeApp(setup.config);
             const auth = getAuth(app);
             const db = getFirestore(app);
 
             window.db = db;
             window.auth = auth;
-            window.appId = appId;
+            window.appId = setup.id || 'jss3-math-cbt'; // Final fallback
             window.addDoc = addDoc;
             window.collection = collection;
             window.serverTimestamp = serverTimestamp;
@@ -130,7 +134,7 @@
                 try {
                     if (window.__initial_auth_token) await signInWithCustomToken(auth, window.__initial_auth_token);
                     else await signInAnonymously(auth);
-                } catch (e) { console.warn("Cloud connection limited."); }
+                } catch (e) { console.warn("Network Error: Data may not sync to cloud."); }
             };
             initAuth();
 
@@ -208,7 +212,7 @@
             userName = document.getElementById('student-name').value.trim();
             if (!userName) { alert("Please enter your name!"); return; }
             
-            // Randomly select 20 from the 40, then shuffle those 20 for this student
+            // Randomly select 20 from the 40 pool
             const pool = shuffle([...MASTER_POOL]);
             questions = pool.slice(0, 20);
 
@@ -269,7 +273,7 @@
 
         function nextQuestion() { if(currentIdx < 19) { currentIdx++; render(); } }
         function prevQuestion() { if(currentIdx > 0) { currentIdx--; render(); } }
-        function confirmSubmit() { if(confirm("Are you sure you want to submit?")) submit(); }
+        function confirmSubmit() { if(confirm("Submit examination?")) submit(); }
 
         async function submit(auto = false) {
             clearInterval(timerInterval);
@@ -288,6 +292,7 @@
 
             if (window.db && window.auth.currentUser) {
                 try {
+                    // RULE 1: Ensure appId path is correct
                     const ref = window.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'exam_results');
                     await window.addDoc(ref, {
                         studentName: userName,
@@ -297,18 +302,17 @@
                         total: 20,
                         details
                     });
-                    document.getElementById('submission-status').innerText = "Results saved to Admin Dashboard.";
-                } catch (e) { document.getElementById('submission-status').innerText = "Network Error: Download your slip below."; }
+                    document.getElementById('submission-status').innerText = "Test Uploaded Successfully.";
+                } catch (e) { document.getElementById('submission-status').innerText = "Sync Error: Result saved locally."; }
             } else {
-                document.getElementById('submission-status').innerText = "Offline Mode: Download your slip below.";
+                document.getElementById('submission-status').innerText = "Offline Mode: Slip generated.";
             }
         }
 
         function downloadResult() {
             let s = 0;
             questions.forEach((q, i) => { if(answers[i] !== undefined && q.options[answers[i]] === q.correct) s++; });
-            const timestamp = new Date().toLocaleString();
-            const blob = new Blob([`STUDENT: ${userName}\nSCORE: ${s}/20\nDATE: ${timestamp}`], {type: 'text/plain'});
+            const blob = new Blob([`STUDENT: ${userName}\nSCORE: ${s}/20\nDATE: ${new Date().toLocaleString()}`], {type: 'text/plain'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
             a.download = `${userName.replace(/\s+/g, '_')}_Result.txt`;
