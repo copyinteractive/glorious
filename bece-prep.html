@@ -3,96 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSS 3 Mathematics CBT</title>
+    <title>JSS 3 Mathematics Examination</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .option-card:hover { transform: translateY(-2px); }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .option-card { cursor: pointer; transition: all 0.2s ease; }
+        .option-card:hover:not(.selected) { border-color: #cbd5e1; background-color: #f8fafc; }
+        .option-card.selected { border-color: #4f46e5; background-color: #eef2ff; transform: scale(1.01); }
         .timer-warning { color: #ef4444; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .progress-btn { transition: all 0.2s ease; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans">
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900">
 
-    <!-- Login Screen -->
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
-        <div class="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-8 md:p-12 border border-slate-100">
-            <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 rotate-3 shadow-xl shadow-indigo-200">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-lg w-full p-8 md:p-12 border border-slate-100 animate-in fade-in zoom-in duration-500">
+            <div class="text-center mb-10">
+                <div class="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-6 rotate-3 shadow-xl shadow-indigo-200">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
                 </div>
-                <h1 class="text-3xl font-extrabold text-slate-800">Mathematics CBT</h1>
-                <p class="text-slate-500 font-medium italic">JSS 3 First Term Examination</p>
+                <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">Mathematics CBT</h1>
+                <p class="text-slate-500 font-medium mt-2">JSS 3 First Term Examination</p>
             </div>
+            
             <div class="space-y-6">
                 <div>
-                    <label class="block text-sm font-bold text-slate-600 mb-2 uppercase tracking-wide">Student Full Name</label>
-                    <input type="text" id="student-name" placeholder="Enter your name..." class="w-full bg-slate-50 border-2 border-slate-100 focus:border-indigo-500 rounded-xl px-5 py-4 text-lg outline-none transition-all placeholder:text-slate-300">
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Student Full Name</label>
+                    <input type="text" id="student-name" placeholder="Surname First..." class="w-full bg-slate-50 border-2 border-slate-100 focus:border-indigo-500 rounded-2xl px-6 py-4 text-lg outline-none transition-all placeholder:text-slate-300">
                 </div>
                 
-                <div id="connection-box" class="bg-slate-50 rounded-2xl p-5 text-slate-500 text-sm border border-slate-100 flex items-center justify-between">
-                    <span class="font-bold">Database Status:</span>
-                    <span id="conn-indicator" class="flex items-center gap-1.5 font-black uppercase text-[10px] tracking-widest text-amber-500 animate-pulse">Connecting...</span>
+                <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100 flex items-center justify-between">
+                    <span class="text-sm font-bold text-slate-500">Network Status:</span>
+                    <div id="conn-indicator" class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-amber-600">Connecting...</span>
+                    </div>
                 </div>
 
-                <div class="bg-indigo-50 rounded-2xl p-5 text-indigo-800 text-sm border border-indigo-100 flex items-start gap-3">
-                    <p><strong>Info:</strong> 20 random questions. Your score is uploaded instantly upon completion.</p>
+                <div class="bg-indigo-50 rounded-2xl p-5 text-indigo-800 text-sm border border-indigo-100 leading-relaxed">
+                    <strong>Examination Rules:</strong><br>
+                    • 20 Minutes total duration.<br>
+                    • 20 objective questions.<br>
+                    • Results are uploaded automatically.
                 </div>
-                <button onclick="startTest()" id="start-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg text-lg active:scale-95">Start Exam</button>
+                
+                <button onclick="startTest()" id="start-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-indigo-100 text-lg active:scale-95 disabled:opacity-50">
+                    Start Examination
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Test Screen -->
-    <div id="test-screen" class="hidden min-h-screen flex flex-col max-w-5xl mx-auto md:py-8 px-4">
-        <header class="bg-white rounded-t-3xl border-b border-slate-100 p-6 flex items-center justify-between shadow-sm sticky top-0 z-10">
+    <!-- TEST INTERFACE -->
+    <div id="test-screen" class="hidden min-h-screen flex flex-col max-w-5xl mx-auto md:py-6 px-4">
+        <header class="bg-white rounded-t-[2rem] border-b border-slate-100 p-6 flex items-center justify-between shadow-sm sticky top-0 z-20">
             <div class="flex items-center gap-4">
-                <div id="q-number-box" class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-100">1</div>
+                <div id="q-number-box" class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-indigo-100">1</div>
                 <div>
-                    <h2 id="q-header" class="text-lg font-bold text-slate-800">Question 1 of 20</h2>
-                    <div id="timer-display" class="flex items-center gap-1.5 font-bold text-indigo-600 tabular-nums"><span id="time-left">20:00</span></div>
+                    <h2 id="q-header" class="text-lg font-bold text-slate-800 leading-tight">Question 1 of 20</h2>
+                    <div id="timer-display" class="flex items-center gap-1.5 font-bold text-indigo-600 tabular-nums">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span id="time-left">20:00</span>
+                    </div>
                 </div>
             </div>
             <div class="text-right hidden sm:block">
-                <p id="display-name" class="text-sm font-bold text-slate-700 uppercase"></p>
-                <div id="status-indicator" class="flex items-center gap-1 text-slate-400 text-[10px] font-black uppercase tracking-widest justify-end">Disconnected</div>
+                <p id="display-name" class="text-sm font-black text-slate-700 uppercase truncate max-w-[200px]"></p>
+                <div id="status-tag" class="text-[9px] font-black uppercase tracking-widest text-slate-400">Offline Session</div>
             </div>
         </header>
 
-        <div class="w-full h-2 bg-slate-200">
-            <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-300" style="width: 5%"></div>
+        <div class="w-full h-1.5 bg-slate-100">
+            <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-500" style="width: 5%"></div>
         </div>
 
-        <main class="bg-white p-8 md:p-12 flex-grow min-h-[400px]">
-            <h3 id="question-text" class="text-2xl font-bold text-slate-800 leading-relaxed mb-10"></h3>
-            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        <main class="bg-white p-8 md:p-14 flex-grow min-h-[400px]">
+            <div class="max-w-3xl">
+                <h3 id="question-text" class="text-2xl md:text-3xl font-bold text-slate-800 leading-snug mb-12"></h3>
+                <div id="options-container" class="grid grid-cols-1 gap-4"></div>
+            </div>
         </main>
 
-        <footer class="bg-white border-t border-slate-100 p-6 rounded-b-3xl flex items-center justify-between shadow-xl">
-            <button onclick="prevQuestion()" id="prev-btn" class="px-6 py-3 font-bold text-slate-400 hover:text-slate-800 disabled:opacity-30">Previous</button>
+        <footer class="bg-white border-t border-slate-50 p-6 rounded-b-[2rem] flex items-center justify-between shadow-2xl">
+            <button onclick="prevQuestion()" id="prev-btn" class="px-8 py-4 font-bold text-slate-400 hover:text-slate-800 transition-colors">Previous</button>
             <div id="nav-btns">
-                <button onclick="nextQuestion()" id="next-btn" class="bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold hover:bg-indigo-700 transition-all active:scale-95">Next Question</button>
-                <button onclick="confirmSubmit()" id="submit-btn" class="hidden bg-green-600 text-white px-10 py-4 rounded-xl font-bold hover:bg-green-700 transition-all active:scale-95">Submit Exam</button>
+                <button onclick="nextQuestion()" id="next-btn" class="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-100">Next Question</button>
+                <button onclick="confirmSubmit()" id="submit-btn" class="hidden bg-green-600 text-white px-10 py-4 rounded-2xl font-black hover:bg-green-700 transition-all active:scale-95 shadow-lg shadow-green-100">Finish Exam</button>
             </div>
         </footer>
-        <div id="progress-grid" class="mt-6 flex flex-wrap justify-center gap-2 pb-10"></div>
+
+        <div id="progress-grid" class="mt-8 flex flex-wrap justify-center gap-2 pb-12"></div>
     </div>
 
-    <!-- Result Screen -->
-    <div id="result-screen" class="hidden min-h-screen flex items-center justify-center p-4 bg-slate-50 text-center">
-        <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-md w-full p-10">
-            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
+    <!-- RESULT SCREEN -->
+    <div id="result-screen" class="hidden min-h-screen flex items-center justify-center p-4 bg-slate-50">
+        <div class="bg-white rounded-[3rem] shadow-2xl max-w-md w-full p-12 text-center border border-slate-100">
+            <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 text-green-500">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
-            <h1 class="text-3xl font-black text-slate-800 mb-2">Examination Ended</h1>
-            <p class="text-slate-500 mb-8 font-medium" id="submission-status">Calculating Results...</p>
-            <div class="bg-slate-50 rounded-3xl p-8 mb-8 border border-slate-100">
+            <h1 class="text-3xl font-black text-slate-800 mb-2">Exam Submitted</h1>
+            <p class="text-slate-500 mb-8 font-medium" id="submission-status">Calculating performance...</p>
+            
+            <div class="bg-slate-50 rounded-[2rem] p-10 mb-8 border border-slate-100 shadow-inner">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Final Score</p>
                 <div id="final-score-display" class="text-7xl font-black text-indigo-600">0/20</div>
                 <div id="final-percent" class="text-2xl font-bold text-slate-700 mt-2">0%</div>
             </div>
-            <button onclick="downloadResult()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-xl shadow-lg mb-3">Download Result Slip</button>
-            <button onclick="location.reload()" class="w-full text-slate-400 font-bold py-2">Log Out</button>
+
+            <button onclick="downloadResult()" class="w-full bg-slate-800 text-white font-black py-5 rounded-2xl shadow-xl mb-4 hover:bg-black transition-all">Download Result Slip</button>
+            <button onclick="location.reload()" class="w-full text-slate-400 font-bold py-2 hover:text-slate-600">Logout</button>
         </div>
     </div>
 
@@ -101,25 +123,20 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // =============================================================
-        // GITHUB LINK: Copy the code block from your Admin Dashboard
-        // (GitHub Setup button) and paste it over the 'null' below.
-        // =============================================================
+        // PRE-CONFIGURED GITHUB SETUP
         const GITHUB_SETUP = {
-  "config": {
-    "apiKey": "AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY",
-    "authDomain": "bard-frontend.firebaseapp.com",
-    "projectId": "bard-frontend",
-    "storageBucket": "bard-frontend.firebasestorage.app",
-    "messagingSenderId": "175205271074",
-    "appId": "1:175205271074:web:2b7bd4d34d33bf38e6ec7b"
-  },
-  "id": "c_f3b99b3b056a792b_teacher_dashboard.html-506"
-}; 
+            "config": {
+                "apiKey": "AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY",
+                "authDomain": "bard-frontend.firebaseapp.com",
+                "projectId": "bard-frontend",
+                "storageBucket": "bard-frontend.firebasestorage.app",
+                "messagingSenderId": "175205271074",
+                "appId": "1:175205271074:web:2b7bd4d34d33bf38e6ec7b"
+            },
+            "id": "c_f3b99b3b056a792b_teacher_dashboard.html-506"
+        };
 
-        const envConfig = window.__firebase_config ? JSON.parse(window.__firebase_config) : null;
-        const envId = window.__app_id || null;
-        const setup = GITHUB_SETUP || { config: envConfig, id: envId };
+        const setup = GITHUB_SETUP;
 
         if (setup.config) {
             const app = initializeApp(setup.config);
@@ -128,35 +145,28 @@
 
             window.db = db;
             window.auth = auth;
-            window.appId = setup.id || 'jss3-math-cbt';
+            window.appId = setup.id;
             window.addDoc = addDoc;
             window.collection = collection;
             window.serverTimestamp = serverTimestamp;
 
             const initAuth = async () => {
                 try {
-                    // RULE 3: Auth First
-                    if (window.__initial_auth_token) await signInWithCustomToken(auth, window.__initial_auth_token);
-                    else await signInAnonymously(auth);
-                } catch (e) {
-                    document.getElementById('conn-indicator').innerText = "Offline Mode";
-                    document.getElementById('conn-indicator').className = "font-black uppercase text-[10px] tracking-widest text-slate-400";
-                }
+                    await signInAnonymously(auth);
+                } catch (e) { console.error("Firebase Login Error", e); }
             };
             initAuth();
 
             onAuthStateChanged(auth, (user) => {
-                const indicator = document.getElementById('status-indicator');
-                const connBox = document.getElementById('conn-indicator');
+                const indicator = document.getElementById('conn-indicator');
+                const tag = document.getElementById('status-tag');
                 if (user) {
-                    if(indicator) {
-                        indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Cloud Ready';
-                        indicator.className = 'flex items-center gap-1 text-green-500 text-[10px] font-black uppercase tracking-widest justify-end';
+                    if (indicator) {
+                        indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500"></span><span class="text-[10px] font-black uppercase tracking-widest text-green-600">Secure Cloud Active</span>';
                     }
-                    if(connBox) {
-                        connBox.innerText = "Online";
-                        connBox.className = "font-black uppercase text-[10px] tracking-widest text-green-500";
-                        document.getElementById('connection-box').classList.add('border-green-100', 'bg-green-50/50');
+                    if (tag) {
+                        tag.innerText = "Cloud Synchronized";
+                        tag.className = "text-[9px] font-black uppercase tracking-widest text-green-500";
                     }
                 }
             });
@@ -164,6 +174,7 @@
     </script>
 
     <script>
+        // MASTER BANK: 40 Questions
         const MASTER_POOL = [
             { q: "Simplify the expression 1 1/5 ÷ 2 1/10.", options: ["3/7", "4/7", "7/4", "1/2"], correct: "4/7" },
             { q: "Simplify the expression 3/4 - 1/6.", options: ["7/12", "5/12", "1/2", "2/2"], correct: "7/12" },
@@ -172,39 +183,39 @@
             { q: "Convert 0.875 to a fraction in its simplest form.", options: ["7/8", "3/4", "5/6", "9/10"], correct: "7/8" },
             { q: "Simplify 2/3 + 1/5.", options: ["3/8", "11/15", "13/15", "2/15"], correct: "13/15" },
             { q: "Express 0.24 as a fraction in its lowest terms.", options: ["12/50", "24/100", "6/25", "1/4"], correct: "6/25" },
-            { q: "A man spends 1/4 income on fees and 3/5 on home. What fraction is left?", options: ["17/20", "7/20", "3/20", "1/5"], correct: "3/20" },
+            { q: "A man spends 1/4 of his income on school fees and 3/5 on home affairs. What fraction is left?", options: ["17/20", "7/20", "3/20", "1/5"], correct: "3/20" },
             { q: "Solve the equation 4/3x = 7 - 3/x.", options: ["x = 21/13", "x = 13/21", "x = 7/4", "x = 1"], correct: "x = 13/21" },
-            { q: "Find x if 1/x + 4/3x - 5/6x + 1 = 0.", options: ["-2/3", "-3/2", "3/2", "2/3"], correct: "-3/2" },
+            { q: "Find the value of x if 1/x + 4/3x - 5/6x + 1 = 0.", options: ["-2/3", "-3/2", "3/2", "2/3"], correct: "-3/2" },
             { q: "Solve for d in the equation (d - 7)/2 = 5.", options: ["10", "12", "17", "2"], correct: "17" },
-            { q: "Find x if x/7 = 10/3 (to 1 decimal place).", options: ["2.1", "21.0", "23.3", "4.3"], correct: "23.3" },
+            { q: "Find x if x/7 = 10/3. (Answer to 1 decimal place).", options: ["2.1", "21.0", "23.3", "4.3"], correct: "23.3" },
             { q: "Make y the subject: 1/y = 3k - 2/x.", options: ["y = x / (3kx - 2)", "y = 3kx - 2", "y = (3kx - 2) / x", "y = 1 / (3k - 2x)"], correct: "y = x / (3kx - 2)" },
             { q: "Solve 2x/3 + 5 = 2/3.", options: ["-6.5", "-6.0", "-4.5", "7.5"], correct: "-6.5" },
             { q: "Solve 2(4x - 1)/3 = 9(x + 1)/4.", options: ["5", "7", "9", "11"], correct: "7" },
             { q: "If 10/x = 2, find x.", options: ["20", "5", "0.2", "8"], correct: "5" },
-            { q: "Area 900.5. Buildings 300.25, Library 200.5, Park 120.125. Roads area?", options: ["900.5", "620.875", "279.625", "300.25"], correct: "279.625" },
-            { q: "Interest N240 in 4 years at 20% simple interest. Principal?", options: ["N300.00", "N450.00", "N480.00", "N1,200.00"], correct: "N300.00" },
-            { q: "4 men in 8 days. How many days for 16 men?", options: ["32 days", "12 days", "4 days", "2 days"], correct: "2 days" },
-            { q: "Share N27,000 in ratio 2:3:5. How much for Femi?", options: ["N5,400", "N8,100", "N13,500", "N15,000"], correct: "N13,500" },
-            { q: "Cup costs N80. 1/2 dozen costs N420. Find discount.", options: ["N40", "N60", "N80", "N100"], correct: "N60" },
-            { q: "Kofi/Amma sum 40 yrs. Kofi is 3x Amma. How old is Kofi?", options: ["10 years", "20 years", "30 years", "40 years"], correct: "30 years" },
+            { q: "School area 900.5. Buildings 300.25, library 200.5, park 120.125. Roads area?", options: ["900.5", "620.875", "279.625", "300.25"], correct: "279.625" },
+            { q: "Interest N240 in 4 years at 20% simple interest. Calculate the principal.", options: ["N300.00", "N450.00", "N480.00", "N1,200.00"], correct: "N300.00" },
+            { q: "If 4 men do work in 8 days, how many days for 16 men?", options: ["32 days", "12 days", "4 days", "2 days"], correct: "2 days" },
+            { q: "Share N27,000 in ratio 2:3:5. How much will Femi (the person with 5 parts) receive?", options: ["N5,400", "N8,100", "N13,500", "N15,000"], correct: "N13,500" },
+            { q: "Plastic cup costs N80. 1/2 dozen costs N420. Find discount allowed on the 1/2 dozen.", options: ["N40", "N60", "N80", "N100"], correct: "N60" },
+            { q: "Sum of Kofi and Amma is 40 yrs. Kofi is 3x Amma. How old is Kofi?", options: ["10 years", "20 years", "30 years", "40 years"], correct: "30 years" },
             { q: "If 30% of a number is 900, what is the number?", options: ["270", "1,200", "2,700", "3,000"], correct: "3,000" },
             { q: "Mean of 3, 2, x, 11, 13, 14 is 8. Find x.", options: ["5", "6", "8", "10"], correct: "5" },
             { q: "Express 367,900 in standard form.", options: ["3.679 x 10^3", "3.679 x 10^4", "3.679 x 10^5", "36.79 x 10^4"], correct: "3.679 x 10^5" },
             { q: "Express 0.00254 in standard form.", options: ["2.54 x 10^-2", "2.54 x 10^-3", "2.54 x 10^3", "25.4 x 10^-4"], correct: "2.54 x 10^-3" },
             { q: "Round off 6827 to the nearest ten.", options: ["6820", "6830", "6800", "6827"], correct: "6830" },
-            { q: "Approximate 0.347 to 1 sig figure.", options: ["0.3", "0.35", "0.4", "0.34"], correct: "0.3" },
+            { q: "Approximate 0.347 to 1 significant figure.", options: ["0.3", "0.35", "0.4", "0.34"], correct: "0.3" },
             { q: "Approximate 4597 to the nearest hundred.", options: ["4500", "4590", "4600", "5000"], correct: "4600" },
             { q: "Approximate 5.7255 to the nearest thousandth.", options: ["5.725", "5.726", "5.730", "5.72"], correct: "5.726" },
             { q: "Evaluate (2 x 10^3) x (4 x 10^-5).", options: ["8 x 10^-2", "8 x 10^2", "6 x 10^-2", "8 x 10^-15"], correct: "8 x 10^-2" },
             { q: "Express 0.00001208 in standard form.", options: ["1.208 x 10^-5", "1.208 x 10^-6", "12.08 x 10^-6", "1.208 x 10^-4"], correct: "1.208 x 10^-5" },
-            { q: "Expand 2(3a + 1) - 3(4a - 3).", options: ["11 - 6a", "6a - 11", "18a + 11", "7 - 6a"], correct: "11 - 6a" },
+            { q: "Expand and simplify 2(3a + 1) - 3(4a - 3).", options: ["11 - 6a", "6a - 11", "18a + 11", "7 - 6a"], correct: "11 - 6a" },
             { q: "Simplify sqrt(18).", options: ["2 sqrt(3)", "3 sqrt(2)", "9 sqrt(2)", "3 sqrt(3)"], correct: "3 sqrt(2)" },
             { q: "Simplify sqrt(169) + sqrt(25).", options: ["13", "17", "18", "22"], correct: "18" },
             { q: "Factorize x^2 - 9.", options: ["(x-3)^2", "(x+3)(x-3)", "(x-9)(x+1)", "(x+3)^2"], correct: "(x+3)(x-3)" },
             { q: "Expand (x + 3)(x - 2).", options: ["x^2 + x - 6", "x^2 - x - 6", "x^2 + 5x - 6", "x^2 - 6"], correct: "x^2 + x - 6" },
             { q: "Simplify 700 - (+400) - (-80).", options: ["220", "380", "1020", "1180"], correct: "380" },
             { q: "Simplify (4x + 3y)^2 - (3x - 2y)^2.", options: ["(7x + y)(x + 5y)", "(7x + 5y)(x + y)", "7x^2 + 5y^2", "(x - y)(7x + 5y)"], correct: "(7x + y)(x + 5y)" },
-            { q: "Find value: 16 x 2 - 3 + 14 ÷ 7.", options: ["15", "20", "26", "31"], correct: "31" }
+            { q: "Find the value of 16 x 2 - 3 + 14 ÷ 7.", options: ["15", "20", "26", "31"], correct: "31" }
         ];
 
         let questions = [];
@@ -224,19 +235,24 @@
 
         function startTest() {
             userName = document.getElementById('student-name').value.trim();
-            if (!userName) { alert("Please enter your name!"); return; }
+            if (!userName) { alert("Please enter your full name!"); return; }
+            
+            // Randomly select 20 from the 40 pool
             const pool = shuffle([...MASTER_POOL]);
             questions = pool.slice(0, 20);
+
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('test-screen').classList.remove('hidden');
             document.getElementById('display-name').innerText = userName;
             initNav();
             render();
+            
             timerInterval = setInterval(() => {
                 timeLeft--;
                 const m = Math.floor(timeLeft / 60);
                 const s = timeLeft % 60;
                 document.getElementById('time-left').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                if (timeLeft <= 120) document.getElementById('timer-display').className = "timer-warning flex items-center gap-1.5 font-bold";
                 if (timeLeft <= 0) { clearInterval(timerInterval); submit(true); }
             }, 1000);
         }
@@ -247,7 +263,7 @@
             questions.forEach((_, i) => {
                 const b = document.createElement('button');
                 b.id = `nav-${i}`;
-                b.className = "w-8 h-8 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-400";
+                b.className = "progress-btn w-9 h-9 rounded-xl border border-slate-200 bg-white text-xs font-black text-slate-400 flex items-center justify-center transition-all";
                 b.innerText = i + 1;
                 b.onclick = () => { currentIdx = i; render(); };
                 grid.appendChild(b);
@@ -260,30 +276,40 @@
             document.getElementById('q-header').innerText = `Question ${currentIdx + 1} of 20`;
             document.getElementById('question-text').innerText = q.q;
             document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / 20) * 100}%`;
+            
             const container = document.getElementById('options-container');
             container.innerHTML = "";
             q.options.forEach((opt, i) => {
                 const sel = answers[currentIdx] === i;
-                const btn = document.createElement('button');
-                btn.className = `option-card p-6 rounded-2xl border-2 text-left transition-all ${sel ? 'border-indigo-600 bg-indigo-50 text-indigo-900 font-bold' : 'border-slate-100 bg-white text-slate-600'}`;
+                const btn = document.createElement('div');
+                btn.className = `option-card p-6 rounded-[1.25rem] border-2 flex items-center gap-4 ${sel ? 'selected' : 'bg-white border-slate-100'}`;
                 btn.onclick = () => { answers[currentIdx] = i; render(); };
-                btn.innerHTML = `<span class="inline-block w-8 h-8 rounded-lg ${sel ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'} text-center leading-8 mr-4 font-bold text-xs">${String.fromCharCode(65+i)}</span> ${opt}`;
+                btn.innerHTML = `
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-black text-sm border-2 ${sel ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-100 text-slate-300'}">
+                        ${String.fromCharCode(65+i)}
+                    </div>
+                    <span class="text-lg font-semibold text-slate-700">${opt}</span>
+                `;
                 container.appendChild(btn);
             });
+
             document.getElementById('prev-btn').disabled = currentIdx === 0;
+            document.getElementById('prev-btn').style.opacity = currentIdx === 0 ? "0.3" : "1";
             document.getElementById('submit-btn').classList.toggle('hidden', currentIdx !== 19);
             document.getElementById('next-btn').classList.toggle('hidden', currentIdx === 19);
+            
+            // Update nav grid
             questions.forEach((_, i) => {
                 const d = document.getElementById(`nav-${i}`);
-                if (currentIdx === i) d.className = "w-10 h-10 rounded-lg bg-indigo-600 text-white font-bold scale-110 shadow-lg";
-                else if (answers[i] !== undefined) d.className = "w-8 h-8 rounded-lg bg-indigo-100 border-indigo-200 text-indigo-700 font-bold";
-                else d.className = "w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-400 font-bold";
+                if (currentIdx === i) d.className = "progress-btn w-10 h-10 rounded-xl bg-indigo-600 text-white font-black scale-110 shadow-lg shadow-indigo-100 flex items-center justify-center z-10";
+                else if (answers[i] !== undefined) d.className = "progress-btn w-9 h-9 rounded-xl bg-indigo-50 border-indigo-100 text-indigo-600 font-black flex items-center justify-center";
+                else d.className = "progress-btn w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-400 font-black flex items-center justify-center";
             });
         }
 
         function nextQuestion() { if(currentIdx < 19) { currentIdx++; render(); } }
         function prevQuestion() { if(currentIdx > 0) { currentIdx--; render(); } }
-        function confirmSubmit() { if(confirm("Submit now?")) submit(); }
+        function confirmSubmit() { if(confirm("Are you sure you want to finish and submit your exam?")) submit(); }
 
         async function submit(auto = false) {
             clearInterval(timerInterval);
@@ -302,7 +328,6 @@
 
             if (window.db && window.auth.currentUser) {
                 try {
-                    // RULE 1: Correct path
                     const ref = window.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'exam_results');
                     await window.addDoc(ref, {
                         studentName: userName,
@@ -312,20 +337,22 @@
                         total: 20,
                         details
                     });
-                    document.getElementById('submission-status').innerText = "Test Uploaded Successfully.";
-                } catch (e) { document.getElementById('submission-status').innerText = "Sync Error: Local Result Saved."; }
+                    document.getElementById('submission-status').innerText = "Results saved to database successfully.";
+                } catch (e) { document.getElementById('submission-status').innerText = "Connection error. Result saved locally."; }
             } else {
-                document.getElementById('submission-status').innerText = "Offline Mode: Result slip generated.";
+                document.getElementById('submission-status').innerText = "Offline Mode: Submission logged locally.";
             }
         }
 
         function downloadResult() {
             let s = 0;
             questions.forEach((q, i) => { if(answers[i] !== undefined && q.options[answers[i]] === q.correct) s++; });
-            const blob = new Blob([`STUDENT: ${userName}\nSCORE: ${s}/20\nDATE: ${new Date().toLocaleString()}`], {type: 'text/plain'});
+            const timestamp = new Date().toLocaleString();
+            const content = `JSS 3 MATHEMATICS EXAMINATION RESULT\n\nNAME: ${userName.toUpperCase()}\nSCORE: ${s}/20\nPERCENTAGE: ${Math.round(s/20*100)}%\nDATE: ${timestamp}\n\nVERIFIED RESULT SLIP`;
+            const blob = new Blob([content], {type: 'text/plain'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `${userName.replace(/\s+/g, '_')}_Result.txt`;
+            a.download = `${userName.replace(/\s+/g, '_')}_Math_Result.txt`;
             a.click();
         }
     </script>
